@@ -1,0 +1,10 @@
+streamlit 
+pydeck
+protobuf
+pip
+openpyxl
+matplotlib
+scikit-learn
+plotly
+scipy
+pandas
