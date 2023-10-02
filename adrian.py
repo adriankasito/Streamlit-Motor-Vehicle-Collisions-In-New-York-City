@@ -4,6 +4,17 @@ import numpy as np
 import pydeck as pdk
 import plotly.express as px
 
+# Sidebar with user data input
+st.sidebar.header("Upload Your Own Data")
+user_data = st.sidebar.file_uploader("Upload a CSV file", type=["csv"])
+
+if user_data is not None:
+    # Load user-provided data
+    original_data = pd.read_csv(user_data, parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+else:
+    # Load default data
+    original_data = pd.read_csv("new.csv", parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+
 DATE_TIME = "accident date_accident time"
 DATA_URL = (r"new.csv")
 
