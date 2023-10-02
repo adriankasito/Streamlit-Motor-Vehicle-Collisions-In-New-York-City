@@ -7,9 +7,21 @@ import plotly.express as px
 DATE_TIME = "accident date_accident time"
 DATA_URL = (r"new.csv")
 
-st.title("Motor Vehicle Collisions in New York City")
-st.markdown("Streamlit Application to analyze Motor Vehicle Collision in New York City 🚗")
-
+#st.title("Motor Vehicle Collisions in New York City")
+st.markdown(
+    "<h1 style='text-align: center; color: #FF5733; font-family: Arial, sans-serif;'>"
+    "Motor Vehicle Collisions in New York City"
+    "</h1>",
+    unsafe_allow_html=True,
+)
+st.image('collision.jpeg', use_column_width=True)
+#st.markdown("Streamlit Application to analyze Motor Vehicle Collision in New York City 🚗")
+st.markdown(
+    "<h4 style='text-align: center; color: #1E90FF; font-family: Helvetica, sans-serif;'>"
+    "Analysis of Motor Vehicle Collisions in New York City 🚗"
+    "</h4>",
+    unsafe_allow_html=True,
+)
 #processing data
 @st.cache_data(persist=True)
 def load_data(nrows):
@@ -35,7 +47,8 @@ injured_people = st.slider("Number of persons injured in vehicle collisions", 0,
 st.map(data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]].dropna(how="any"))
 
 #slider to filter based on time
-st.header("How many collisions occur during a given time of day?")
+#st.header("How many collisions occur during a given time of day?")
+st.markdown("<h3 style='text-align: center; color: #FF5733;'>How many collisions occur during a given time of day?</h3>", unsafe_allow_html=True)
 hour = st.slider("Hour to look at", 0, 23)
 original_data = data
 data = data[data['accident date_accident time'].dt.hour == hour]
@@ -68,6 +81,7 @@ st.write(pdk.Deck(
 
 #Showing Histogram based on time
 st.subheader("Breakdown by minute between %i:00 and %i:00" % (hour, (hour + 1) % 24))
+
 filtered = data[
     (data['accident date_accident time'].dt.hour >= hour) & (data['accident date_accident time'].dt.hour < (hour + 1))
 ]
@@ -82,11 +96,14 @@ st.write(fig)
 
 #Showing Top 5 Dangerous streets by filtering
 # Sidebar with user input
-st.sidebar.header("Select Affected Class")
+st.sidebar.header("Select Affected Class - Injuries")
 select = st.sidebar.selectbox("Affected class", ["Pedestrians", "Cyclists", "Motorists"])
 
+
 # Filter and display top 5 dangerous streets
-st.title("Top 5 Dangerous Streets by Affected Class")
+#st.title("Top 5 Dangerous Streets by Affected Class")
+st.markdown('<h3 style="color: yellow;"><span>&#9888;</span> Top 5 Dangerous Streets by Affected Class</h3>', unsafe_allow_html=True)
+
 if select == "Pedestrians":
     column_name = "number of pedestrians injured"
 elif select == "Cyclists":
@@ -104,6 +121,56 @@ sorted_data = filtered_data.sort_values(by=[column_name], ascending=False).head(
 
 # Display the results in a table
 st.write(sorted_data[["on street name", column_name]])
+
+#Showing Top 10 streets by deaths filtering
+# Sidebar with user input
+st.sidebar.header("Select Affected Class - Deaths")
+select = st.sidebar.selectbox("Affected class", ["Pedestrians Killed", "Cyclists Killed", "Motorists Killed"])
+# Filter and display top 10 streets with most deaths
+#st.title("Top 10 Streets by deaths Affected Class")
+st.markdown(
+    "<h3 style='color: darkred;'>Top 10 Streets by Deaths - Affected Class</h3>",
+    unsafe_allow_html=True
+)
+if select == "Pedestrians Killed":
+    column_name_ = "number of pedestrians killed"
+elif select == "Cyclists Killed":
+    column_name_ = "number of cyclist killed"
+else:
+    column_name_ = "number of motorist killed"
+
+# Filter the data based on the selected class and death count
+filtered_data = original_data[
+    (original_data[column_name_] >= 1) & original_data["on street name"].notna()
+]
+
+# Sort the data by the injury count in descending order and get the top 10
+sorted_data = filtered_data.sort_values(by=[column_name_], ascending=False).head(10)
+
+# Display the results in a table
+st.write(sorted_data[["on street name", column_name_]])
+
+#Breakdown of vehicle type by collision involvement
+value_counts = data['vehicle type code 1'].value_counts()
+
+# Display the value counts in Streamlit
+#st.write("Breakdown of vehicle type by collision involvement")
+st.markdown(
+    "<h3 style='color: cyan;'>Breakdown of vehicle type by collision involvement</h3>",
+    unsafe_allow_html=True
+)
+st.write(value_counts)
+
+#Breakdown of factors contributing to collision 
+value_counts = data['contributing factor vehicle 1'].value_counts()
+
+# Display the value counts in Streamlit
+#st.write("Breakdown of vehicle type by collision involvement")
+st.markdown(
+    "<h3 style='color: darkgreen;'>Breakdown of factors contributing to collisions</h3>",
+    unsafe_allow_html=True
+)
+st.write(value_counts)
 
 #Checkbox to show raw table data
 if st.checkbox("Show raw data", False):
