@@ -8,17 +8,22 @@ import plotly.express as px
 st.sidebar.header("Upload Your Own Data")
 user_data = st.sidebar.file_uploader("Upload a CSV file", type=["csv"])
 
-if user_data is not None:
-    # Load user-provided data
-    original_data = pd.read_csv(user_data, parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
-else:
-    # Load default data
-    original_data = pd.read_csv("new.csv", parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+@st.cache_data(persist=True)
+def load_data(file):
+    if file is not None:
+        # Load user-provided data
+        data = pd.read_csv(file, parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+    else:
+        # Load default data
+        data = pd.read_csv("new.csv", parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+    return data
+
+original_data = load_data(user_data)
 
 DATE_TIME = "accident date_accident time"
-DATA_URL = (r"new.csv")
+DATA_URL = "new.csv"
 
-#st.title("Motor Vehicle Collisions in New York City")
+# Title and Image
 st.markdown(
     "<h1 style='text-align: center; color: #FF5733; font-family: Arial, sans-serif;'>"
     "Motor Vehicle Collisions in New York City"
@@ -26,13 +31,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.image('collision.jpeg', use_column_width=True)
-#st.markdown("Streamlit Application to analyze Motor Vehicle Collision in New York City 🚗")
+
+# Subtitle
 st.markdown(
     "<h4 style='text-align: center; color: #1E90FF; font-family: Helvetica, sans-serif;'>"
     "Analysis of Motor Vehicle Collisions in New York City 🚗"
     "</h4>",
     unsafe_allow_html=True,
 )
+
+# The rest of your code remains unchanged
+
 #processing data
 @st.cache_data(persist=True)
 def load_data(nrows):
@@ -86,6 +95,7 @@ st.write(pdk.Deck(
         pickable=True,
         elevation_scale=4,
         elevation_range=[0, 1000],
+         colorRange=[[255, 0, 0]],
         ),
     ],
 ))
@@ -99,7 +109,7 @@ filtered = data[
 hist = np.histogram(filtered['accident date_accident time'].dt.minute, bins=60, range=(0, 60))[0]
 chart_data = pd.DataFrame({"minute": range(60), "crashes": hist})
 
-fig = px.bar(chart_data, x='minute', y='crashes', hover_data=['minute', 'crashes'], height=400)
+fig = px.bar(chart_data, x='minute', y='crashes', hover_data=['minute', 'crashes'], height=400, color_discrete_sequence=['darkred'])
 st.write(fig)
 
 #st.write(original_data.columns)
