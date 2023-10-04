@@ -40,8 +40,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# The rest of your code remains unchanged
-
 #processing data
 @st.cache_data(persist=True)
 def load_data(nrows):
