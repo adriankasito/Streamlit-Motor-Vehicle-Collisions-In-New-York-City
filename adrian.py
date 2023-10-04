@@ -9,16 +9,24 @@ st.sidebar.header("Upload Your Own Data")
 user_data = st.sidebar.file_uploader("Upload a CSV file", type=["csv"])
 
 @st.cache_data(persist=True)
-def load_data(file):
+def load_data(file, nrows):
     if file is not None:
         # Load user-provided data
         data = pd.read_csv(file, parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
     else:
         # Load default data
         data = pd.read_csv("new.csv", parse_dates=[['ACCIDENT DATE', 'ACCIDENT TIME']])
+    
+    # Limit the number of rows based on the selected nrows value
+    data = data.iloc[:nrows]
     return data
 
-original_data = load_data(user_data)
+# Slider to let the user select the number of rows to use
+max_slider_rows = len(pd.read_csv("new.csv"))  # Change this to your default dataset
+nrows = st.sidebar.slider("Select the number of rows to use", min_value=1, max_value=max_slider_rows, value=2200)
+
+# Load the data with the selected number of rows
+original_data = load_data(user_data, nrows)
 
 DATE_TIME = "accident date_accident time"
 DATA_URL = "new.csv"
@@ -40,6 +48,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 #processing data
 @st.cache_data(persist=True)
 def load_data(nrows):
@@ -53,9 +62,9 @@ def load_data(nrows):
     return data
 
 max_nrows = 2247
-original_data = load_data(max_nrows)
+original_data = load_data(nrows)  # Adjusted to use the selected nrows value
 
-data = load_data(2200)
+data = load_data(nrows)  # Adjusted to use the selected nrows value
 data[['latitude','longitude']].to_csv('lat_long.csv', index=False)
 
 
