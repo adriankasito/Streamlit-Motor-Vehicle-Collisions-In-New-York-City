@@ -25,7 +25,7 @@ The project includes the following files:
 
 5. **procfile**: Configuration file used for deploying the application on platforms like Heroku.
 
-6. **data files**: The project uses data files, including a default dataset in CSV format (new.csv) and a background image (collision.jpeg).
+6. **data files**: The project uses data files, including a default dataset in CSV format (new.csv and lat_long.csv) and a background image (collision.jpeg).
 
 ## Getting Started
 
